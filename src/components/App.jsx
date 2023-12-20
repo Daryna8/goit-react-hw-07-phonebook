@@ -1,20 +1,27 @@
-// import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { ContactForm } from './ContactForm';
 import { Filter } from './Filter';
 import { ContactList } from './ContactList';
 import s from './PhoneBook.module.css';
 import { useDispatch, useSelector } from 'react-redux';
+import { setFilter } from '../redux/phonebook/phonebookSlice';
 import {
-  addContact,
-  deleteContact,
-  setFilter,
-} from '../redux/phonebook/phonebookSlice';
+  addContactThunk,
+  deleteContactsThunk,
+  fetchContactsThunk,
+} from '../redux/phonebook/operations';
 
 export const App = () => {
   const dispatch = useDispatch();
 
-  const contacts = useSelector(state => state.phonebookData.contacts);
+  const contacts = useSelector(state => state.phonebookData.contacts.items);
   const filter = useSelector(state => state.phonebookData.filter);
+  const loading = useSelector(state => state.phonebookData.contacts.isLoading);
+  const error = useSelector(state => state.phonebookData.contacts.error);
+
+  useEffect(() => {
+    dispatch(fetchContactsThunk());
+  }, [dispatch]);
 
   const handleChangeFilter = e => {
     dispatch(setFilter(e.currentTarget.value));
@@ -29,15 +36,16 @@ export const App = () => {
       alert(`${newContact.name} is already in contacts.`);
       return;
     }
-    dispatch(addContact(newContact));
+    dispatch(addContactThunk(newContact));
   };
 
   const handleDeleteContact = id => {
-    dispatch(deleteContact(id));
+    dispatch(deleteContactsThunk(id));
   };
 
   return (
     <div className={s.phonebook}>
+      {loading && !error && <b>Request in progress...</b>}
       <h1>Phonebook</h1>
       <ContactForm handleAddContact={handleAddContact} />
 
