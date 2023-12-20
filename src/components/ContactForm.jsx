@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import s from './PhoneBook.module.css';
-import { nanoid } from 'nanoid';
 
 export const ContactForm = ({ handleAddContact }) => {
   const [name, setName] = useState('');
@@ -8,8 +7,7 @@ export const ContactForm = ({ handleAddContact }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
-    const id = nanoid();
-    const newContact = { id, name, number };
+    const newContact = { name, number };
 
     handleAddContact(newContact);
 
